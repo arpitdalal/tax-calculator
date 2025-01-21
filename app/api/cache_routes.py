@@ -10,8 +10,8 @@ cache_bp = Blueprint('cache', __name__)
 
 @cache_bp.route('/cache', methods=['DELETE'])
 @timing('delete:/clear-cache')
-@rate_limit()
 @require_api_key
+@rate_limit()
 def clear_cache():
     """Clear entire tax brackets cache"""
     try:
@@ -25,8 +25,8 @@ def clear_cache():
 
 @cache_bp.route('/cache/tax-year/<int:year>', methods=['DELETE'])
 @timing('delete:/clear-cache/tax-year/<int:year>')
-@rate_limit()
 @require_api_key
+@rate_limit()
 def clear_year_cache(year: int):
     """Clear cache for specific tax year"""
     try:
