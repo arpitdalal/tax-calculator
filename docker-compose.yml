@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  external-api:
+    image: ptsdocker16/interview-test-server
+    ports:
+      - "5001:5001"
+
+  api:
+    build: .
+    command: poetry run flask run --host=0.0.0.0 --port=5002
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./app:/app/app
+      - ./tests:/app/tests
+      - ./wsgi.py:/app/wsgi.py
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./poetry.lock:/app/poetry.lock
+    environment:
+      - FLASK_DEBUG=1
+      - API_URL=http://external-api:5001
+      - REDIS_URL=redis://redis:6379
+      - ADMIN_API_KEY=1234567890
+    depends_on:
+      - redis
+      - external-api
+
+  worker:
+    build: .
+    command: poetry run rq worker tax_calculations
+    volumes:
+      - ./app:/app/app
+      - ./tests:/app/tests
+      - ./wsgi.py:/app/wsgi.py
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./poetry.lock:/app/poetry.lock
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - API_URL=http://external-api:5001
+    depends_on:
+      - redis
+      - api
+      - external-api
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  redis_data: 

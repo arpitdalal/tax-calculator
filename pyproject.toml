@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "flask-assignment"
+version = "0.1.0"
+description = ""
+authors = ["Arpit Dalal <arpitdalalm@gmail.com>"]
+readme = "README.md"
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-dotenv = "^1.0.1"
+flask = "^3.1.0"
+requests = "^2.32.3"
+redis = "^5.2.1"
+rq = "^2.1.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+fakeredis = "^2.21.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-vs"
