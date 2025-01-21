@@ -17,11 +17,8 @@ services:
       - ./wsgi.py:/app/wsgi.py
       - ./pyproject.toml:/app/pyproject.toml
       - ./poetry.lock:/app/poetry.lock
-    environment:
-      - FLASK_DEBUG=1
-      - API_URL=http://external-api:5001
-      - REDIS_URL=redis://redis:6379
-      - ADMIN_API_KEY=1234567890
+    env_file:
+      - docker-compose.env
     depends_on:
       - redis
       - external-api
@@ -35,9 +32,8 @@ services:
       - ./wsgi.py:/app/wsgi.py
       - ./pyproject.toml:/app/pyproject.toml
       - ./poetry.lock:/app/poetry.lock
-    environment:
-      - REDIS_URL=redis://redis:6379
-      - API_URL=http://external-api:5001
+    env_file:
+      - docker-compose.env
     depends_on:
       - redis
       - api
