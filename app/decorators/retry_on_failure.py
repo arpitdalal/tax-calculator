@@ -7,7 +7,7 @@ from typing import Callable
 from app import logger
 from app.exceptions.api_errors import APIError, ValidationError
 
-def retry_on_failure(max_retries = 3, delay_in_seconds = 1) -> Callable:
+def retry_on_failure(max_retries = 3, delay_in_seconds:float = 1) -> Callable:
     """
     Decorator to retry API calls on failure
     Accepts optional parameters for maximum retries and delay in seconds
