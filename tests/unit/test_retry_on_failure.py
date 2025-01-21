@@ -141,8 +141,8 @@ def test_retry_with_multiple_decorators(mock_logger):
     
     mock_func = Mock(side_effect=[requests.RequestException("Error"), "success"])
     
-    @another_decorator
     @retry_on_failure(max_retries=2, delay_in_seconds=0)
+    @another_decorator
     def test_function():
         return mock_func()
     
