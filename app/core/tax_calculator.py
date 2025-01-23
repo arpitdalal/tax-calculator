@@ -14,7 +14,7 @@ tax_brackets_cache = LRUCache(ttl_in_seconds=ONE_MONTH_IN_SECONDS)
 
 class TaxCalculator:
     @timing("TaxCalculator.fetch_tax_brackets")
-    @retry_on_failure()
+    @retry_on_failure(should_abort_retry=lambda exception: isinstance(exception, RateLimitError))
     def fetch_tax_brackets(self, year: int | str, api_url: str) -> Tuple[List[Dict], bool]:
         """Fetch tax brackets for a given year from external API"""
         try:

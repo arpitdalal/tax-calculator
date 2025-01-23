@@ -5,7 +5,7 @@ import time
 from unittest.mock import patch, Mock
 
 from app.decorators.retry_on_failure import retry_on_failure
-from app.exceptions.api_errors import APIError, ValidationError
+from app.exceptions.api_errors import APIError, ValidationError, RateLimitError
 
 @pytest.fixture
 def mock_logger():
@@ -149,4 +149,20 @@ def test_retry_with_multiple_decorators(mock_logger):
     result = test_function()
     assert result == "success"
     assert mock_func.call_count == 2
-    mock_logger.warning.assert_called_once() 
+    mock_logger.warning.assert_called_once()
+
+def test_retry_abort_early_on_rate_limit(mock_logger):
+    """Test that function aborts early on RateLimitError."""
+    mock_func = Mock(side_effect=[RateLimitError("API rate limit exceeded"), "success"])
+    
+    @retry_on_failure(max_retries=3, delay_in_seconds=0, should_abort_retry=lambda e: isinstance(e, RateLimitError))
+    def test_function():
+        return mock_func()
+    
+    with pytest.raises(RateLimitError) as exc_info:
+        test_function()
+    
+    assert str(exc_info.value) == "API rate limit exceeded"
+    assert mock_func.call_count == 1
+    mock_logger.warning.assert_called_once()
+    mock_logger.error.assert_not_called()
